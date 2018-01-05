@@ -73,6 +73,11 @@ public class Main extends Application {
     }
 
 
+    public static void callImag() {
+        Main main = new Main();
+        main.imageHandle();
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         //Get reference of primaryStage to use in code further
@@ -96,41 +101,9 @@ public class Main extends Application {
         styleStage(primaryStage);
         primaryStage.setScene(imageScene);
 
-
+        RightClickMenu.RightClick(imageScene, primaryStage);
         primaryStage.show();
         StartingTips.run();
-
-    }
-
-    private void addNodesToRoot(BorderPane root) {
-        /*
-        Center: Canvas contains imaged Thremal image and two left and right arrow to jump
-                previous and next image
-        Bottom :Simple HBOX to show images in folder
-        Left  :Nothing
-        Right : Like Tool bar contains all functionalities
-         */
-
-        //CEnter
-        root.setCenter(imageDisplay);
-
-        //Bottom
-        HBox imagePositionBox = new HBox();
-        imagePositionBox.setMinHeight(Values.IMAGE_POSITION_BOX_HEIGHT);
-        designBottomBox(imagePositionBox);
-        root.setBottom(imagePositionBox);
-        //Right
-        VBox rightBox = new VBox();
-        rightBox.setMinWidth(Values.RIGHT_BAR_WIDTH);
-        designRightBox(rightBox);
-        root.setRight(rightBox);
-
-        //Top
-        HBox topBox = new HBox();
-        topBox.setMinHeight(Values.TOP_BAR_HEIGHT);
-        designTopBar(topBox, rightBox, root);
-        root.setTop(topBox);
-
 
     }
 
@@ -368,67 +341,37 @@ public class Main extends Application {
 
     }
 
-
-    private void handleSmallMenuButton(Button button, Node root, BorderPane pane) {
+    private void addNodesToRoot(BorderPane root) {
         /*
-        If this button is clicked show a Context
-        menu with some options
+        Center: Canvas contains imaged Thremal image and two left and right arrow to jump
+                previous and next image
+        Bottom :Simple HBOX to show images in folder
+        Left  :Nothing
+        Right : Like Tool bar contains all functionalities
          */
-        button.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                ContextMenu contextMenu = new ContextMenu();
-                MenuItem loadMenuItem = new MenuItem("Load......");//Load image from pictures directory
-                MenuItem saveMenuItem = new MenuItem("Save......");//Save showing image in current directoty
-                MenuItem openMenuItem = new MenuItem("Open......");//Open an image from user Selection
-                MenuItem openTheme = new MenuItem("Themes");//Set Different Themes
 
-                contextMenu.getItems().addAll(loadMenuItem, saveMenuItem, openMenuItem, openTheme);
-                contextMenu.show(root, Side.TOP, Values.SMALL_MENU_DX, Values.SMALL_MENU_DY);
+        //CEnter
+        root.setCenter(imageDisplay);
 
-                openTheme.setOnAction(event1 -> {
-                    Theme.themeMenu(pane);
-                });
+        //Bottom
+        HBox imagePositionBox = new HBox();
+        imagePositionBox.setMinHeight(Values.IMAGE_POSITION_BOX_HEIGHT);
+        designBottomBox(imagePositionBox);
+        root.setBottom(imagePositionBox);
+        //Right
+        VBox rightBox = new VBox();
+        rightBox.setMinWidth(Values.RIGHT_BAR_WIDTH);
+        designRightBox(rightBox);
+        root.setRight(rightBox);
 
-                loadMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-
-                    }
-                });
-                saveMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        System.out.println("save");
-                        saveImage(singleImageFile, singleImageName);
-                    }
-                });
-                openMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        try {
-                            Metadata metadata = ImageMetadataReader.readMetadata(openImage());
-                            SupportCodes.saveProp(metadata);
-
-                        } catch (MalformedURLException e) {
-                            System.out.println(e);
-                        } catch (Exception e) {
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setTitle("Warning Dialog");
-                            alert.setHeaderText("Look, There was an Error");
-                            alert.setContentText("Please Try Again!");
-                            alert.showAndWait();
-
-                        }
-
-                    }
+        //Top
+        HBox topBox = new HBox();
+        topBox.setMinHeight(Values.TOP_BAR_HEIGHT);
+        designTopBar(topBox, rightBox, root);
+        RightClickMenu.paneSave(root);
+        root.setTop(topBox);
 
 
-                });
-
-
-            }
-        });
     }
 
     private void handleZoomSelectionButton(Button button, Node root) {
@@ -611,13 +554,81 @@ public class Main extends Application {
         });
     }
 
-    private void handleImageFolder(Button button) {
+    private void handleSmallMenuButton(Button button, Node root, BorderPane pane) {
         /*
-        If Button is clicked it open DirectoryChooser
+        If this button is clicked show a Context
+        menu with some options
          */
         button.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
+                ContextMenu contextMenu = new ContextMenu();
+                MenuItem loadMenuItem = new MenuItem("Load......");//Load image from pictures directory
+                MenuItem saveMenuItem = new MenuItem("Save......");//Save showing image in current directoty
+                MenuItem openMenuItem = new MenuItem("Open......");//Open an image from user Selection
+                MenuItem openTheme = new MenuItem("Themes");//Set Different Themes
+
+                contextMenu.getItems().addAll(loadMenuItem, saveMenuItem, openMenuItem, openTheme);
+                contextMenu.show(root, Side.TOP, Values.SMALL_MENU_DX, Values.SMALL_MENU_DY);
+
+                openTheme.setOnAction(event1 -> {
+                    Theme.themeMenu(pane);
+
+                });
+
+                loadMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+
+                    }
+                });
+                saveMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        System.out.println("save");
+                        saveImage(singleImageFile, singleImageName);
+                    }
+                });
+                openMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        try {
+                            Metadata metadata = ImageMetadataReader.readMetadata(openImage());
+                            SupportCodes.saveProp(metadata);
+
+                        } catch (MalformedURLException e) {
+                            System.out.println(e);
+                        } catch (Exception e) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Warning Dialog");
+                            alert.setHeaderText("Look, There was an Error");
+                            alert.setContentText("Please Try Again!");
+                            alert.showAndWait();
+
+                        }
+
+                    }
+
+
+                });
+
+
+            }
+        });
+    }
+
+    private void handleImageFolder(Button button) {
+        // imageHandle(button);
+        button.setOnMouseClicked(event -> imageHandle());
+    }
+
+    public void imageHandle() {
+         /*
+        If Button is clicked it open DirectoryChooser
+         */
+//        button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+//            @Override
+//            public void handle(MouseEvent event) {
                 //++++++++++++++++++++++++++++++++++++++++++changed
 
 
@@ -721,9 +732,7 @@ public class Main extends Application {
 
 
             }
-        });
 
-    }
 
     private HBox setImageView() {
 
