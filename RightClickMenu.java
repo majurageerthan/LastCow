@@ -6,27 +6,28 @@ import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.input.ContextMenuEvent;
-import javafx.scene.input.KeyCombination;
+import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 
 public class RightClickMenu {
     static BorderPane paneS;
+    public static Scene sceneS;
 
     public static void RightClick(Scene scene, Stage stage) {
-
+        sceneS = scene;
+        keyEvents();
 
         // Create ContextMenu
         ContextMenu contextMenu = new ContextMenu();
 
         MenuItem temp = new MenuItem("Set Temperature");
-        // temp.setOnAction(event -> );
+
 
         MenuItem imgFolder = new MenuItem("Open image folder");
         imgFolder.setOnAction(event -> {
-            Main.callImag();
+            //Main.callImag();
         });
 
         MenuItem zoom = new MenuItem("Zoom and pan");
@@ -71,6 +72,7 @@ public class RightClickMenu {
 
     }
 
+
     public static void createMenu(MenuItem menuItem, String shortCut) {
 
 
@@ -83,5 +85,18 @@ public class RightClickMenu {
     public static void paneSave(BorderPane pane) {
         paneS = pane;
     }
+
+    public static void keyEvents() {
+        sceneS.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.T) {
+                Theme.themeMenu(paneS);
+            }
+        });
+
+    }
+
+
+
+
 }
 
